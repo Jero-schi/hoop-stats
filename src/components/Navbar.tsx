@@ -48,9 +48,12 @@ const Navbar = () => {
             </div>
             {/* Mobile Menu Overlay */}
             {isMobileMenuOpen && (
-                <div className="fixed inset-0 z-50 md:hidden animate-in fade-in duration-200">
-                    <div className="absolute inset-0 bg-navy-dark/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
-                    <div className="absolute right-0 top-0 bottom-0 w-3/4 max-w-sm bg-navy-light shadow-2xl border-l border-slate-800 flex flex-col slide-in-from-right-1/2 animate-in duration-300">
+                <div className="fixed inset-0 z-[100] md:hidden">
+                    {/* Backdrop */}
+                    <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsMobileMenuOpen(false)}></div>
+
+                    {/* Sidebar */}
+                    <div className="fixed right-0 top-0 h-[100dvh] w-4/5 max-w-sm bg-slate-900 shadow-2xl border-l border-slate-800 flex flex-col animate-in slide-in-from-right duration-300">
                         <div className="flex items-center justify-between p-6 border-b border-slate-800">
                             <div className="flex items-center gap-3">
                                 <div className="w-8 h-8 flex-shrink-0 bg-hoops-orange rounded-lg flex items-center justify-center shadow-lg shadow-hoops-orange/20">
@@ -64,6 +67,7 @@ const Navbar = () => {
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
+
                         <nav className="flex-1 py-6 px-4 flex flex-col gap-3 overflow-y-auto">
                             <p className="px-2 text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Main Menu</p>
                             {navItems.map((item) => (
@@ -78,7 +82,8 @@ const Navbar = () => {
                                 </Link>
                             ))}
                         </nav>
-                        <div className="p-6 border-t border-slate-800">
+
+                        <div className="p-6 border-t border-slate-800 shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-sm font-bold border border-slate-500 text-white">
                                     C
@@ -91,8 +96,7 @@ const Navbar = () => {
                         </div>
                     </div>
                 </div>
-            )
-            }
+            )}
         </header >
     );
 };
