@@ -30,15 +30,15 @@ export default async function PlayersPage() {
             {/* Header section con el formulario */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h1 className="text-4xl font-black text-white tracking-tight">Team Roster</h1>
-                    <p className="text-slate-400 mt-2">Manage your players, positions and physical profiles.</p>
+                    <h1 className="text-4xl font-black text-white tracking-tight">Plantilla del Equipo</h1>
+                    <p className="text-slate-400 mt-2">Gestiona a tus jugadores, posiciones y perfiles físicos.</p>
                 </div>
-                {activeTeamId ? <AddPlayerForm teamId={activeTeamId} /> : <div className="text-hoops-orange text-sm font-bold">Please select a team in the top bar to add players.</div>}
+                {activeTeamId ? <AddPlayerForm teamId={activeTeamId} /> : <div className="text-hoops-orange text-sm font-bold">Por favor, selecciona un equipo en la barra superior para añadir jugadores.</div>}
             </div>
 
             {error && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl">
-                    Error loading players: {error.message}
+                    Error al cargar los jugadores: {error.message}
                 </div>
             )}
 
@@ -48,8 +48,8 @@ export default async function PlayersPage() {
                     <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
                         <User className="w-10 h-10 text-slate-500" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">No players found</h3>
-                    <p className="text-slate-400 mb-6">Your roster is currently empty. Get started by adding your first player.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">Sin jugadores</h3>
+                    <p className="text-slate-400 mb-6">Tu plantilla está vacía. Empieza añadiendo a tu primer jugador.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -72,23 +72,23 @@ export default async function PlayersPage() {
 
                                 <div className="mt-5 grid grid-cols-2 gap-4">
                                     <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/50">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Height</p>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Altura</p>
                                         <p className="text-sm font-semibold text-white">{player.height_cm ? `${player.height_cm} cm` : '--'}</p>
                                     </div>
                                     <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/50">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Weight</p>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Peso</p>
                                         <p className="text-sm font-semibold text-white">{player.weight_kg ? `${player.weight_kg} kg` : '--'}</p>
                                     </div>
                                     <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/50">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Age</p>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Edad</p>
                                         <p className="text-sm font-semibold text-white">{player.age || '--'}</p>
                                     </div>
                                     <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/50">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Status</p>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Estado</p>
                                         <div className="flex items-center gap-1.5 mt-1">
                                             <div className={`w-2 h-2 rounded-full ${player.active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}`}></div>
                                             <p className="text-sm font-semibold text-white">
-                                                {player.active ? 'Active' : 'Inactive'}
+                                                {player.active ? 'Activo' : 'Inactivo'}
                                             </p>
                                         </div>
                                     </div>

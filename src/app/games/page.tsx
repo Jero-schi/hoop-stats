@@ -29,15 +29,15 @@ export default async function GamesPage() {
         <div className="p-8 max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h1 className="text-4xl font-black text-white tracking-tight">Game Center</h1>
-                    <p className="text-slate-400 mt-2">Track live games, manage box scores, and view match history.</p>
+                    <h1 className="text-4xl font-black text-white tracking-tight">Centro de Partidos</h1>
+                    <p className="text-slate-400 mt-2">Registra partidos en vivo, gestiona marcadores y revisa el historial.</p>
                 </div>
-                {activeTeamId ? <AddGameForm teamId={activeTeamId} /> : <div className="text-hoops-orange text-sm font-bold">Please select a team in the top bar to add games.</div>}
+                {activeTeamId ? <AddGameForm teamId={activeTeamId} /> : <div className="text-hoops-orange text-sm font-bold">Por favor, selecciona un equipo en la barra superior para añadir partidos.</div>}
             </div>
 
             {error && (
                 <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl">
-                    Error loading games: {error.message}
+                    Error al cargar partidos: {error.message}
                 </div>
             )}
 
@@ -46,8 +46,8 @@ export default async function GamesPage() {
                     <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
                         <Calendar className="w-10 h-10 text-slate-500" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">No games recorded</h3>
-                    <p className="text-slate-400 mb-6">Start a new match to begin tracking live stats for your players.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">Aún sin partidos</h3>
+                    <p className="text-slate-400 mb-6">Empieza un nuevo partido para comenzar a generar estadísticas.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -57,12 +57,12 @@ export default async function GamesPage() {
                             <div className="p-6 border-b border-slate-800/50 flex justify-between items-center bg-slate-900/40">
                                 <div>
                                     <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest ${game.location === 'Home' ? 'bg-orange-500/10 text-orange-500' :
-                                        game.location === 'Away' ? 'bg-blue-500/10 text-blue-500' :
+                                        game.location === 'Visitante' ? 'bg-blue-500/10 text-blue-500' :
                                             'bg-slate-500/10 text-slate-400'
                                         }`}>
                                         {game.location}
                                     </span>
-                                    <p className="text-sm font-medium text-slate-400 mt-2">{new Date(game.date).toLocaleDateString()}</p>
+                                    <p className="text-sm font-medium text-slate-400 mt-2">{new Date(game.date).toLocaleDateString('es-ES')}</p>
                                 </div>
                                 {game.outcome ? (
                                     <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-xl shadow-inner ${game.outcome === 'W' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
@@ -73,7 +73,7 @@ export default async function GamesPage() {
                                     </div>
                                 ) : (
                                     <span className="px-3 py-1 bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 rounded-full text-xs font-bold animate-pulse">
-                                        PENDING
+                                        EN VIVO
                                     </span>
                                 )}
                             </div>
@@ -82,7 +82,7 @@ export default async function GamesPage() {
                             <div className="p-6 flex-1 flex flex-col justify-center">
                                 <div className="flex items-center justify-between text-center gap-4">
                                     <div className="flex-1">
-                                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2">Us</p>
+                                        <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mb-2">Nosotros</p>
                                         <p className="text-4xl font-black text-white">{game.team_score ?? '--'}</p>
                                     </div>
                                     <div className="text-slate-600 font-black text-2xl">VS</div>
@@ -99,7 +99,7 @@ export default async function GamesPage() {
                             <div className="p-4 bg-slate-900/40 border-t border-slate-800/50">
                                 <Link href={`/games/${game.id}`} className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm transition-colors flex items-center justify-center gap-2 group">
                                     <PlayCircle className="w-4 h-4 text-slate-400 group-hover:text-hoops-orange transition-colors" />
-                                    {game.outcome ? 'View Box Score' : 'Open Live Tracker'}
+                                    {game.outcome ? 'Ver Estadísticas' : 'Abrir Registro en Vivo'}
                                 </Link>
                             </div>
                         </div>
