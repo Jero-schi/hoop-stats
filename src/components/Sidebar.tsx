@@ -3,11 +3,11 @@ import Link from 'next/link';
 import { Home, Users, Calendar, Activity, Dumbbell, Trophy } from 'lucide-react';
 
 const navItems = [
-    { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Roster', href: '/players', icon: Users },
-    { name: 'Games', href: '/games', icon: Calendar },
-    { name: 'Athletic Dept', href: '/training', icon: Dumbbell },
-    { name: 'Analytics', href: '/stats', icon: Activity },
+    { name: 'Inicio', href: '/', icon: Home },
+    { name: 'Plantilla', href: '/players', icon: Users },
+    { name: 'Partidos', href: '/games', icon: Calendar },
+    { name: 'Prep. Física', href: '/training', icon: Dumbbell },
+    { name: 'Estadísticas', href: '/stats', icon: Activity },
 ];
 
 export default function Sidebar() {
@@ -27,7 +27,7 @@ export default function Sidebar() {
 
             {/* Navigation Links */}
             <nav className="flex-1 py-8 px-4 flex flex-col gap-2">
-                <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Main Menu</p>
+                <p className="px-4 text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Menú Principal</p>
                 {navItems.map((item) => (
                     <Link
                         key={item.name}

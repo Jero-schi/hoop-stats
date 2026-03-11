@@ -106,9 +106,9 @@ export default async function StatsPage() {
                         <div className="w-10 h-10 rounded-xl bg-hoops-orange/10 flex items-center justify-center">
                             <BarChart3 className="w-5 h-5 text-hoops-orange" />
                         </div>
-                        <h1 className="text-4xl font-black text-white tracking-tight">Analytics & Stats</h1>
+                        <h1 className="text-4xl font-black text-white tracking-tight">Analítica y Estadísticas</h1>
                     </div>
-                    <p className="text-slate-400 mt-2">Team leaders and season averages.</p>
+                    <p className="text-slate-400 mt-2">Líderes del equipo y promedios de temporada.</p>
                 </div>
                 {sortedStats.length > 0 && <PrintButton />}
             </div>
@@ -116,8 +116,8 @@ export default async function StatsPage() {
             {sortedStats.length === 0 ? (
                 <div className="bg-navy-light/30 border border-slate-800 rounded-3xl p-12 text-center flex flex-col items-center">
                     <Activity className="w-12 h-12 text-slate-500 mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">No data yet</h3>
-                    <p className="text-slate-400">Play some games and save stats to see the analytics dashboard.</p>
+                    <h3 className="text-xl font-bold text-white mb-2">Aún sin datos</h3>
+                    <p className="text-slate-400">Juega algunos partidos y guarda las estadísticas para ver este panel.</p>
                 </div>
             ) : (
                 <>
@@ -126,7 +126,7 @@ export default async function StatsPage() {
                         {/* Scoring Leader */}
                         <div className="bg-gradient-to-br from-hoops-orange/20 to-transparent border border-hoops-orange/30 rounded-3xl p-6 relative overflow-hidden group">
                             <Award className="absolute -right-4 -top-4 w-24 h-24 text-hoops-orange/10 transform group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                            <p className="text-hoops-orange font-bold text-sm tracking-widest uppercase mb-4">Scoring Leader</p>
+                            <p className="text-hoops-orange font-bold text-sm tracking-widest uppercase mb-4">Líder de Anotación</p>
                             <div className="flex gap-4 items-center">
                                 <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-hoops-orange/20 flex items-center justify-center text-2xl font-black text-slate-300">
                                     {sortedStats[0].jersey_number}
@@ -141,7 +141,7 @@ export default async function StatsPage() {
                         {/* Rebounds Leader */}
                         <div className="bg-gradient-to-br from-blue-500/20 to-transparent border border-blue-500/30 rounded-3xl p-6 relative overflow-hidden group">
                             <Activity className="absolute -right-4 -top-4 w-24 h-24 text-blue-500/10 transform group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                            <p className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-4">Rebounds Leader</p>
+                            <p className="text-blue-500 font-bold text-sm tracking-widest uppercase mb-4">Líder de Rebotes</p>
                             <div className="flex gap-4 items-center">
 
                                 <div>
@@ -154,7 +154,7 @@ export default async function StatsPage() {
                         {/* Assists Leader */}
                         <div className="bg-gradient-to-br from-emerald-500/20 to-transparent border border-emerald-500/30 rounded-3xl p-6 relative overflow-hidden group">
                             <TrendingUp className="absolute -right-4 -top-4 w-24 h-24 text-emerald-500/10 transform group-hover:scale-110 group-hover:rotate-12 transition-transform" />
-                            <p className="text-emerald-500 font-bold text-sm tracking-widest uppercase mb-4">Assists Leader</p>
+                            <p className="text-emerald-500 font-bold text-sm tracking-widest uppercase mb-4">Líder de Asistencias</p>
                             <div className="flex gap-4 items-center">
                                 <div>
                                     <h3 className="text-xl font-black text-white">{[...sortedStats].sort((a, b) => parseFloat(b.apg) - parseFloat(a.apg))[0].last_name}</h3>
@@ -167,13 +167,13 @@ export default async function StatsPage() {
                     {/* Master Data Table */}
                     <div className="bg-navy-light/40 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl mt-8">
                         <div className="p-6 border-b border-slate-800/50 bg-slate-900/40">
-                            <h3 className="text-lg font-bold text-white">Season Averages</h3>
+                            <h3 className="text-lg font-bold text-white">Promedios de Temporada</h3>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[1000px]">
                                 <thead>
                                     <tr className="bg-slate-900/80 border-b border-slate-800 text-xs text-slate-400 uppercase tracking-widest">
-                                        <th className="p-4 font-bold pl-6 sticky left-0 bg-slate-900 z-10 w-48">Player</th>
+                                        <th className="p-4 font-bold pl-6 sticky left-0 bg-slate-900 z-10 w-48">Jugador</th>
                                         <th className="p-4 font-bold text-center">GP</th>
                                         <th className="p-4 font-bold text-center text-white">PTS</th>
                                         <th className="p-4 px-6 font-bold text-center whitespace-nowrap">FGM-A</th>

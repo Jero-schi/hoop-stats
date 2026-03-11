@@ -54,7 +54,7 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
         setGameScore(previousState.gameScore);
         setOpponentStats(previousState.opponentStats);
         setHistory(prev => prev.slice(0, -1));
-        showToast("Action undone", "success");
+        showToast("Acción deshecha", "success");
     };
 
     useEffect(() => {
@@ -181,12 +181,12 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
         const { error: statsError } = await supabase.from('game_stats').upsert(statsArray, { onConflict: 'game_id,player_id' });
 
         setIsSaving(false);
-        if (gameError) showToast("Error saving game details: " + gameError.message, 'error');
-        else if (statsError) showToast("Error saving player stats: " + statsError.message, 'error');
-        else showToast("Game stats synced successfully!", 'success');
+        if (gameError) showToast("Error guardando detalles del partido: " + gameError.message, 'error');
+        else if (statsError) showToast("Error guardando estadísticas de jugador: " + statsError.message, 'error');
+        else showToast("¡Estadísticas del partido sincronizadas con éxito!", 'success');
     };
 
-    if (Object.keys(stats).length === 0) return <div className="text-white p-8 animate-pulse text-center">Configuring court...</div>;
+    if (Object.keys(stats).length === 0) return <div className="text-white p-8 animate-pulse text-center">Configurando la cancha...</div>;
 
     const getActionColor = () => {
         if (!activeAction) return '';
@@ -203,9 +203,9 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
             {activeAction && (
                 <div className="absolute inset-0 z-50 bg-navy-dark/95 backdrop-blur-md flex flex-col p-6 animate-in fade-in duration-200">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-3xl font-black text-white">Who made the play?</h2>
+                        <h2 className="text-3xl font-black text-white">¿Quién hizo la jugada?</h2>
                         <button onClick={() => setActiveAction(null)} className="px-6 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition">
-                            Cancel
+                            Cancelar
                         </button>
                     </div>
 
@@ -219,7 +219,7 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                             onClick={() => confirmActionForPlayer('OPPONENT')}
                             className="w-full flex items-center justify-center p-6 bg-red-950/40 border-2 border-red-500/50 rounded-3xl hover:bg-red-900/60 active:scale-95 transition-all shadow-lg"
                         >
-                            <span className="font-black text-red-500 text-2xl uppercase tracking-widest">Enemy Team ({game.opponent})</span>
+                            <span className="font-black text-red-500 text-2xl uppercase tracking-widest">Equipo Rival ({game.opponent})</span>
                         </button>
 
                         {/* Cuadrícula de Nuestros Jugadores */}
@@ -249,7 +249,7 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                         <ArrowLeft className="w-5 h-5" />
                     </Link>
                     <div className="hidden sm:block">
-                        <span className="text-xs font-black uppercase text-slate-500">Live Match</span>
+                        <span className="text-xs font-black uppercase text-slate-500">Partido en Vivo</span>
                         <h1 className="text-lg font-bold text-white leading-tight truncate max-w-[150px]">vs {game.opponent}</h1>
                     </div>
                 </div>
@@ -257,7 +257,7 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                 {/* Scoreboard Central Ligero */}
                 <div className="flex items-center gap-3 sm:gap-6 bg-slate-900 rounded-2xl px-6 py-2 border border-slate-700 shadow-inner">
                     <div className="flex flex-col items-center">
-                        <span className="text-[10px] font-black uppercase text-hoops-orange">Us</span>
+                        <span className="text-[10px] font-black uppercase text-hoops-orange">NOS</span>
                         <span className="text-3xl font-black text-white">{gameScore.us}</span>
                     </div>
                     <span className="text-lg font-black text-slate-600">:</span>
@@ -272,29 +272,29 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                         onClick={handleUndo}
                         disabled={history.length === 0}
                         className={`hidden md:flex items-center justify-center p-3 rounded-2xl border ${history.length > 0 ? 'bg-slate-800 border-slate-600 text-white hover:bg-slate-700 cursor-pointer' : 'bg-slate-900 border-slate-800 text-slate-600 cursor-not-allowed'} transition-colors`}
-                        title="Undo Last Action"
+                        title="Deshacer Última Acción"
                     >
                         <Undo2 className="w-5 h-5" />
                     </button>
                     <select value={gameOutcome} onChange={(e) => setGameOutcome(e.target.value)} className="hidden lg:flex bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 outline-none">
-                        <option value="TBD">In Progress</option><option value="W">Win</option><option value="L">Loss</option>
+                        <option value="TBD">En Curso</option><option value="W">Victoria</option><option value="L">Derrota</option>
                     </select>
                     <button onClick={saveToSupabase} disabled={isSaving} className="px-6 py-3 rounded-2xl font-bold bg-hoops-orange text-white shadow-lg shadow-hoops-orange/20 active:scale-95 transition-all flex items-center gap-2">
                         {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-                        <span className="hidden sm:inline">Save</span>
+                        <span className="hidden sm:inline">Guardar</span>
                     </button>
                 </div>
             </div>
 
             {/* Panel Principal de Acciones */}
             <div className="flex-1 overflow-y-auto bg-gradient-to-br from-navy-dark via-navy-dark to-slate-900 p-4 sm:p-8 pb-32">
-                <h3 className="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4 text-center">Court Actions</h3>
+                <h3 className="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4 text-center">Acciones de Cancha</h3>
 
                 {/* Cuadrícula de Botones Rediseñada */}
                 <div className="max-w-4xl mx-auto space-y-6">
                     <div className="hidden md:flex font-bold uppercase tracking-widest text-[10px] text-slate-500 gap-4 mt-2 mb-2 sm:mb-4 px-2">
                         <span>Score: {gameScore.us}</span>
-                        <span>Misses & Other Stats</span>
+                        <span>Fallos y Otras Stats</span>
                     </div>
 
                     {/* Scoring Grid */}
@@ -303,10 +303,10 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                         <div className="flex flex-col gap-2">
                             <button onClick={() => handleActionClick('3PT_MAKE')} className="h-20 sm:h-28 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 hover:bg-emerald-500/20 active:scale-95 transition-all flex flex-col items-center justify-center shadow-lg shadow-emerald-900/10">
                                 <span className="text-2xl sm:text-4xl font-black text-emerald-500">+3</span>
-                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">3PT MAKE</span>
+                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">3PT METIDO</span>
                             </button>
                             <button onClick={() => handleActionClick('3PT_MISS')} className="h-12 sm:h-14 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center shadow-inner">
-                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">3PT Miss</span>
+                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">3PT Fallado</span>
                             </button>
                         </div>
 
@@ -314,10 +314,10 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                         <div className="flex flex-col gap-2">
                             <button onClick={() => handleActionClick('2PT_MAKE')} className="h-20 sm:h-28 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 hover:bg-emerald-500/20 active:scale-95 transition-all flex flex-col items-center justify-center shadow-lg shadow-emerald-900/10">
                                 <span className="text-2xl sm:text-4xl font-black text-emerald-500">+2</span>
-                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">2PT MAKE</span>
+                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">2PT METIDO</span>
                             </button>
                             <button onClick={() => handleActionClick('2PT_MISS')} className="h-12 sm:h-14 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center shadow-inner">
-                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">2PT Miss</span>
+                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">2PT Fallado</span>
                             </button>
                         </div>
 
@@ -325,10 +325,10 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                         <div className="flex flex-col gap-2">
                             <button onClick={() => handleActionClick('FT_MAKE')} className="h-20 sm:h-28 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 hover:bg-emerald-500/20 active:scale-95 transition-all flex flex-col items-center justify-center shadow-lg shadow-emerald-900/10">
                                 <span className="text-2xl sm:text-4xl font-black text-emerald-500">+1</span>
-                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">FT MAKE</span>
+                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">TL METIDO</span>
                             </button>
                             <button onClick={() => handleActionClick('FT_MISS')} className="h-12 sm:h-14 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center shadow-inner">
-                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">FT Miss</span>
+                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">TL Fallado</span>
                             </button>
                         </div>
                     </div>
@@ -363,16 +363,16 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                     {/* Resumen Nuestro Equipo */}
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-hoops-orange font-bold uppercase tracking-widest text-sm">Our Box Score</h3>
+                            <h3 className="text-hoops-orange font-bold uppercase tracking-widest text-sm">Nuestras Estadísticas</h3>
                             <button onClick={() => setShowFullBoxScore(true)} className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors">
-                                <BarChart2 className="w-3.5 h-3.5" /> Full Stats
+                                <BarChart2 className="w-3.5 h-3.5" /> Stats Completas
                             </button>
                         </div>
                         <div className="bg-slate-900/50 rounded-3xl border border-slate-800 overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[500px]">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-xs text-slate-500 uppercase">
-                                        <th className="p-3 pl-4 font-bold">Player</th>
+                                        <th className="p-3 pl-4 font-bold">Jugador</th>
                                         <th className="p-3 font-bold text-center">PTS</th>
                                         <th className="p-3 font-bold text-center">FG</th>
                                         <th className="p-3 font-bold text-center text-blue-400">O-REB</th>
@@ -405,7 +405,7 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
 
                     {/* Resumen Equipo Rival (Global) */}
                     <div>
-                        <h3 className="text-red-500 font-bold uppercase tracking-widest text-sm mb-4">Enemy Team Stats</h3>
+                        <h3 className="text-red-500 font-bold uppercase tracking-widest text-sm mb-4">Estadísticas del Equipo Rival</h3>
                         <div className="bg-red-950/20 rounded-3xl border border-red-900/30 overflow-hidden">
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-red-900/30">
                                 <div className="bg-slate-900 p-4 flex flex-col items-center">
@@ -455,10 +455,10 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                             <div className="w-10 h-10 rounded-xl bg-hoops-orange/10 flex items-center justify-center">
                                 <BarChart2 className="w-5 h-5 text-hoops-orange" />
                             </div>
-                            <h2 className="text-3xl font-black text-white">Full Box Score</h2>
+                            <h2 className="text-3xl font-black text-white">Estadísticas Completas</h2>
                         </div>
                         <button onClick={() => setShowFullBoxScore(false)} className="px-6 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition">
-                            Close
+                            Cerrar
                         </button>
                     </div>
 
@@ -467,7 +467,7 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-slate-800 text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">
-                                        <th className="p-3 font-bold sticky left-0 bg-slate-900 z-10 w-48">Player</th>
+                                        <th className="p-3 font-bold sticky left-0 bg-slate-900 z-10 w-48">Jugador</th>
                                         <th className="p-3 font-black text-white text-center">PTS</th>
                                         <th className="p-3 font-bold text-center">FGM-A</th>
                                         <th className="p-3 font-bold text-center">3PM-A</th>

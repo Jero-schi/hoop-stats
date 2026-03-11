@@ -74,15 +74,15 @@ export default async function DashboardPage() {
       {/* Header section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-          <h1 className="text-4xl font-black text-white tracking-tight">Team Overview</h1>
-          <p className="text-slate-400 mt-2">Welcome back! Here are the latest insights on the squad.</p>
+          <h1 className="text-4xl font-black text-white tracking-tight">Resumen del Equipo</h1>
+          <p className="text-slate-400 mt-2">¡Bienvenido de nuevo! Aquí tienes las últimas estadísticas de la plantilla.</p>
         </div>
         <div className="flex gap-3">
           <Link href="/stats" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-navy-light text-white border border-slate-700 hover:bg-slate-800 transition-colors">
-            Full Analytics
+            Analítica Completa
           </Link>
           <Link href="/games" className="px-5 py-2.5 rounded-xl text-sm font-bold bg-hoops-orange text-white shadow-lg shadow-hoops-orange/20 hover:bg-hoops-orange-hover transition-colors">
-            New Match
+            Nuevo Partido
           </Link>
         </div>
       </div>
@@ -90,10 +90,10 @@ export default async function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: "Win Rate", value: winRate, trend: `${wins}W - ${losses}L`, icon: TrophyIcon, color: "text-yellow-500", bg: "bg-yellow-500/10" },
-          { label: "Avg Points", value: avgPoints, trend: "Per Game", icon: Flame, color: "text-hoops-orange", bg: "bg-hoops-orange/10" },
-          { label: "Active Players", value: activeRoster.toString(), trend: "On Roster", icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-          { label: "Total Matches", value: totalGames.toString(), trend: "Played", icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { label: "Porc. Victorias", value: winRate, trend: `${wins}V - ${losses}D`, icon: TrophyIcon, color: "text-yellow-500", bg: "bg-yellow-500/10" },
+          { label: "Pts. Promedio", value: avgPoints, trend: "Por Partido", icon: Flame, color: "text-hoops-orange", bg: "bg-hoops-orange/10" },
+          { label: "Jugadores Activos", value: activeRoster.toString(), trend: "En Plantilla", icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
+          { label: "Partidos Totales", value: totalGames.toString(), trend: "Jugados", icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
         ].map((stat, i) => (
           <div key={i} className="bg-navy-light/50 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6 hover:bg-navy-light transition-all cursor-default group">
             <div className="flex items-start justify-between">
@@ -118,16 +118,16 @@ export default async function DashboardPage() {
         {/* Top Performers */}
         <div className="lg:col-span-2 bg-navy-light/30 border border-slate-800 rounded-3xl p-8">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-bold text-white">Top Performers</h2>
+            <h2 className="text-xl font-bold text-white">Mejores Rendimientos</h2>
             <Link href="/players" className="text-sm font-bold text-hoops-orange flex items-center hover:text-hoops-orange-hover">
-              View Roster <ChevronRight className="w-4 h-4 ml-1" />
+              Ver Plantilla <ChevronRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
 
           <div className="space-y-4">
             {processedPlayers.length === 0 ? (
               <div className="text-center p-8 bg-slate-900/50 rounded-2xl border border-slate-800/50">
-                <p className="text-slate-500 font-bold">No stats recorded yet.</p>
+                <p className="text-slate-500 font-bold">Aún no hay estadísticas registradas.</p>
               </div>
             ) : processedPlayers.map((player: any, i) => (
               <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-slate-900/50 hover:bg-slate-800 border border-transparent hover:border-slate-700 transition-all cursor-pointer">
@@ -137,7 +137,7 @@ export default async function DashboardPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-white">{player.first_name} {player.last_name}</h4>
-                    <p className="text-xs font-semibold text-slate-500">{player.position || 'Player'}</p>
+                    <p className="text-xs font-semibold text-slate-500">{player.position || 'Jugador'}</p>
                   </div>
                 </div>
                 <div className="flex gap-8 text-right">
@@ -163,16 +163,16 @@ export default async function DashboardPage() {
 
         {/* Recent Games */}
         <div className="bg-navy-light/30 border border-slate-800 rounded-3xl p-8">
-          <h2 className="text-xl font-bold text-white mb-8">Recent Games</h2>
+          <h2 className="text-xl font-bold text-white mb-8">Partidos Recientes</h2>
           <div className="space-y-6">
             {recentGames.length === 0 ? (
               <div className="text-center p-8">
-                <p className="text-slate-500 font-bold text-sm">No games processed yet.</p>
+                <p className="text-slate-500 font-bold text-sm">Ningún partido procesado aún.</p>
               </div>
             ) : recentGames.map((game, i) => {
               // Formatear fecha simple (Ej: Oct 24)
               const dateObj = new Date(game.date);
-              const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              const dateStr = dateObj.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
 
               return (
                 <div key={i} className="flex items-center justify-between group">
@@ -196,7 +196,7 @@ export default async function DashboardPage() {
           </div>
 
           <Link href="/games" className="mt-8 block text-center w-full py-3 rounded-xl border border-slate-700 text-sm font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
-            View All Games
+            Ver Todos los Partidos
           </Link>
         </div>
 

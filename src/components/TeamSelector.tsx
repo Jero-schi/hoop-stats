@@ -52,7 +52,7 @@ export default function TeamSelector() {
             await loadTeams();
             handleSelectTeam(data.id);
         } else {
-            alert("Error creating team: " + error?.message);
+            alert("Error al crear equipo: " + error?.message);
         }
     };
 
@@ -76,14 +76,14 @@ export default function TeamSelector() {
                     onClick={() => setIsCreating(true)}
                     className="flex items-center gap-2 bg-hoops-orange text-white text-sm font-bold rounded-xl px-4 py-2 shadow-lg shadow-hoops-orange/20"
                 >
-                    <Plus className="w-4 h-4" /> Create First Team
+                    <Plus className="w-4 h-4" /> Crear Primer Equipo
                 </button>
             )}
 
             {isOpen && (
                 <div className="absolute top-full left-0 mt-3 w-64 bg-navy-light border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="p-2 space-y-1 max-h-60 overflow-y-auto">
-                        <p className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Select Category</p>
+                        <p className="px-3 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Seleccionar Categoría</p>
                         {teams.map(team => (
                             <button
                                 key={team.id}
@@ -100,7 +100,7 @@ export default function TeamSelector() {
                             onClick={() => { setIsOpen(false); setIsCreating(true); }}
                             className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors text-sm font-bold"
                         >
-                            <Plus className="w-4 h-4" /> Add New Team
+                            <Plus className="w-4 h-4" /> Añadir Nueva Categoría
                         </button>
                     </div>
                 </div>
@@ -109,20 +109,20 @@ export default function TeamSelector() {
             {isCreating && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-navy-dark/95 backdrop-blur-sm">
                     <div className="bg-navy-light border border-slate-700 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <h3 className="text-xl font-black text-white mb-2">Create New Category</h3>
-                        <p className="text-slate-400 text-sm mb-6">e.g. U15 Boys, U17 Girls, Senior Team</p>
+                        <h3 className="text-xl font-black text-white mb-2">Crear Nueva Categoría</h3>
+                        <p className="text-slate-400 text-sm mb-6">ej. U15 Masculino, U17 Femenino, Primera</p>
                         <form onSubmit={handleCreateTeam}>
                             <input
                                 autoFocus
                                 required
                                 value={newTeamName}
                                 onChange={e => setNewTeamName(e.target.value)}
-                                placeholder="Team Name..."
+                                placeholder="Nombre de la categoría..."
                                 className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 mb-6 outline-none focus:border-hoops-orange focus:ring-1 focus:ring-hoops-orange transition-all"
                             />
                             <div className="flex gap-3 justify-end">
-                                <button type="button" onClick={() => setIsCreating(false)} className="px-5 py-2.5 rounded-xl text-slate-400 font-bold hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-800 border border-transparent hover:border-slate-700">Cancel</button>
-                                <button type="submit" className="px-5 py-2.5 rounded-xl bg-hoops-orange text-white font-bold flex items-center gap-2 shadow-lg shadow-hoops-orange/20 active:scale-95 transition-all">Save Team</button>
+                                <button type="button" onClick={() => setIsCreating(false)} className="px-5 py-2.5 rounded-xl text-slate-400 font-bold hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-800 border border-transparent hover:border-slate-700">Cancelar</button>
+                                <button type="submit" className="px-5 py-2.5 rounded-xl bg-hoops-orange text-white font-bold flex items-center gap-2 shadow-lg shadow-hoops-orange/20 active:scale-95 transition-all">Guardar</button>
                             </div>
                         </form>
                     </div>

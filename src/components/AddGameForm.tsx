@@ -56,7 +56,7 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
             .single();
 
         if (error) {
-            alert('Error creating game: ' + error.message);
+            alert('Error al crear partido: ' + error.message);
             setIsLoading(false);
             return;
         }
@@ -97,14 +97,14 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
                 className="px-5 py-2.5 rounded-xl text-sm font-bold bg-hoops-orange text-white shadow-lg shadow-hoops-orange/20 hover:bg-hoops-orange-hover transition-colors flex items-center gap-2"
             >
                 <Plus className="w-4 h-4" />
-                New Game
+                Nuevo Partido
             </button>
 
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-dark/80 backdrop-blur-sm">
                     <div className="bg-navy-light border border-slate-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-center p-6 border-b border-slate-800">
-                            <h2 className="text-xl font-black text-white">Match Setup</h2>
+                            <h2 className="text-xl font-black text-white">Configuración del Partido</h2>
                             <button disabled={isLoading} onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white transition-colors">
                                 <X className="w-6 h-6" />
                             </button>
@@ -113,29 +113,29 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
                         <form onSubmit={handleSubmit} className="p-6 space-y-6">
                             <div className="space-y-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Opposing Team *</label>
-                                    <input required name="opponent" value={formData.opponent} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange focus:ring-1 focus:ring-hoops-orange transition-all" placeholder="e.g. Lakers" />
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Equipo Rival *</label>
+                                    <input required name="opponent" value={formData.opponent} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange focus:ring-1 focus:ring-hoops-orange transition-all" placeholder="ej. Lakers" />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Location</label>
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ubicación</label>
                                     <select name="location" value={formData.location} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all appearance-none cursor-pointer">
-                                        <option value="Home">Home</option>
-                                        <option value="Away">Away</option>
+                                        <option value="Local">Local</option>
+                                        <option value="Visitante">Visitante</option>
                                         <option value="Neutral">Neutral</option>
                                     </select>
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Date</label>
+                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Fecha</label>
                                     <input type="date" required name="date" value={formData.date} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-slate-300 rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all" />
                                 </div>
 
                                 {players.length > 0 && (
                                     <div className="space-y-2 col-span-1 md:col-span-2 pt-2">
                                         <div className="flex justify-between items-center mb-2">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Roster for this Game</label>
-                                            <span className="text-xs font-bold text-hoops-orange bg-hoops-orange/10 px-2 py-1 rounded-md">{selectedPlayers.length} Selected</span>
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Seleccionar Plantilla para este Partido</label>
+                                            <span className="text-xs font-bold text-hoops-orange bg-hoops-orange/10 px-2 py-1 rounded-md">{selectedPlayers.length} Seleccionados</span>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-2">
                                             {players.map(p => {
@@ -162,10 +162,10 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
 
                             <div className="pt-4 flex justify-end gap-3">
                                 <button type="button" disabled={isLoading} onClick={() => setIsOpen(false)} className="px-5 py-3 rounded-xl text-sm font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
-                                    Cancel
+                                    Cancelar
                                 </button>
                                 <button type="submit" disabled={isLoading} className="px-6 py-3 rounded-xl text-sm font-bold bg-hoops-orange text-white shadow-lg shadow-hoops-orange/20 hover:bg-hoops-orange-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Start Match'}
+                                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Empezar Partido'}
                                 </button>
                             </div>
                         </form>

@@ -6,11 +6,11 @@ import Link from 'next/link';
 import TeamSelector from './TeamSelector';
 
 const navItems = [
-    { name: 'Dashboard', href: '/', icon: Home },
-    { name: 'Roster', href: '/players', icon: Users },
-    { name: 'Games', href: '/games', icon: Calendar },
-    { name: 'Athletic Dept', href: '/training', icon: Dumbbell },
-    { name: 'Analytics', href: '/stats', icon: Activity },
+    { name: 'Inicio', href: '/', icon: Home },
+    { name: 'Plantilla', href: '/players', icon: Users },
+    { name: 'Partidos', href: '/games', icon: Calendar },
+    { name: 'Prep. Física', href: '/training', icon: Dumbbell },
+    { name: 'Estadísticas', href: '/stats', icon: Activity },
 ];
 
 const Navbar = () => {
@@ -23,7 +23,7 @@ const Navbar = () => {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-hoops-orange transition-colors" />
                     <input
                         type="text"
-                        placeholder="Search players, games, stats..."
+                        placeholder="Buscar jugadores, partidos..."
                         className="bg-navy-light text-sm text-white placeholder-slate-500 rounded-full pl-10 pr-6 py-2.5 w-80 outline-none focus:ring-2 focus:ring-hoops-orange/50 transition-all shadow-inner shadow-black/20"
                     />
                 </div>
@@ -69,7 +69,7 @@ const Navbar = () => {
                         </div>
 
                         <nav className="flex-1 py-6 px-4 flex flex-col gap-3 overflow-y-auto">
-                            <p className="px-2 text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Main Menu</p>
+                            <p className="px-2 text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Menú Principal</p>
                             {navItems.map((item) => (
                                 <Link
                                     key={item.name}
