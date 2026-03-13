@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Search, Bell, Menu, X, Home, Users, Calendar, Activity, Dumbbell, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import TeamSelector from './TeamSelector';
+import { logout } from '@/app/login/actions';
 
 const navItems = [
     { name: 'Inicio', href: '/', icon: Home },
@@ -84,15 +85,17 @@ const Navbar = () => {
                         </nav>
 
                         <div className="p-6 border-t border-slate-800 shrink-0">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-sm font-bold border border-slate-500 text-white">
-                                    C
-                                </div>
-                                <div>
-                                    <p className="text-sm font-bold text-white">Coach Jero</p>
-                                    <p className="text-xs text-slate-500">Head Coach</p>
-                                </div>
-                            </div>
+                            <form action={logout}>
+                                <button type="submit" className="w-full flex items-center gap-3 text-left">
+                                    <div className="shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-600 flex items-center justify-center text-sm font-bold border border-slate-500 text-white">
+                                        C
+                                    </div>
+                                    <div className="flex-1 overflow-hidden">
+                                        <p className="text-sm font-bold text-white truncate max-w-[150px]">Opciones</p>
+                                        <p className="text-xs text-rose-500 font-bold hover:text-rose-400 transition-colors">Cerrar Sesión</p>
+                                    </div>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
