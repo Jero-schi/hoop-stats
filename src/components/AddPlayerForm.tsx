@@ -3,41 +3,69 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { UserPlus, X, Loader2 } from 'lucide-react';
+import { UserPlus, X, Loader2, AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// 1. Zod Schema: El guardia de seguridad de tus datos
+const playerSchema = z.object({
+    first_name: z.string().min(2, "Debe tener al menos 2 letras").max(50, "Demasiado largo"),
+    last_name: z.string().min(2, "Debe tener al menos 2 letras").max(50, "Demasiado largo"),
+    position: z.string().min(1, "Requerido"),
+    jersey_number: z.string()
+        .refine(val => !val || (parseInt(val) >= 0 && parseInt(val) <= 99), "El dorsal debe ser entre 0 y 99"),
+    age: z.string()
+        .refine(val => !val || (parseInt(val) >= 10 && parseInt(val) <= 99), "Carga una edad válida (10-99)"),
+    height_cm: z.string()
+        .refine(val => !val || (parseInt(val) >= 100 && parseInt(val) <= 250), "Altura inválida (100-250cm)"),
+    weight_kg: z.string()
+        .refine(val => !val || !isNaN(parseFloat(val)) && parseFloat(val) > 20, "Peso inválido"),
+});
+
+// Tipado automático inferido de Zod
+type PlayerFormValues = z.infer<typeof playerSchema>;
 
 export default function AddPlayerForm({ teamId }: { teamId: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [globalError, setGlobalError] = useState<string | null>(null);
     const router = useRouter();
 
-    const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        age: '',
-        position: 'PG',
-        height_cm: '',
-        weight_kg: '',
-        jersey_number: ''
+    // 2. React Hook Form: Reemplaza el montón de states e if/elses
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<PlayerFormValues>({
+        resolver: zodResolver(playerSchema),
+        defaultValues: {
+            first_name: '',
+            last_name: '',
+            position: 'Base (PG)',
+            jersey_number: '',
+            age: '',
+            height_cm: '',
+            weight_kg: ''
+        }
     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const onSubmit = async (data: PlayerFormValues) => {
         setIsLoading(true);
+        setGlobalError(null);
 
         const supabase = createClient();
 
+        // 3. Transformación Segura
         const insertData = {
-            first_name: formData.first_name,
-            last_name: formData.last_name,
-            age: formData.age ? parseInt(formData.age) : null,
-            position: formData.position,
-            height_cm: formData.height_cm ? parseInt(formData.height_cm) : null,
-            weight_kg: formData.weight_kg ? parseFloat(formData.weight_kg) : null,
-            jersey_number: formData.jersey_number ? parseInt(formData.jersey_number) : null,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            position: data.position,
+            age: data.age ? parseInt(data.age) : null,
+            height_cm: data.height_cm ? parseInt(data.height_cm) : null,
+            weight_kg: data.weight_kg ? parseFloat(data.weight_kg) : null,
+            jersey_number: data.jersey_number ? parseInt(data.jersey_number) : null,
             team_id: teamId
         };
 
@@ -46,13 +74,11 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
         setIsLoading(false);
 
         if (error) {
-            alert('Error al añadir jugador: ' + error.message);
+            setGlobalError('Error al guardar en el servidor: ' + error.message);
         } else {
             setIsOpen(false);
-            setFormData({
-                first_name: '', last_name: '', age: '', position: 'PG', height_cm: '', weight_kg: '', jersey_number: ''
-            });
-            router.refresh(); // Tells Next.js to re-fetch Server Components (update the list)
+            reset(); // Limpia todo mágicamente
+            router.refresh();
         }
     };
 
@@ -76,22 +102,44 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+
+                            {/* Error Global (si cae Supabase) */}
+                            {globalError && (
+                                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex gap-3 text-red-500 text-sm">
+                                    <AlertCircle className="w-5 h-5 shrink-0" />
+                                    <p>{globalError}</p>
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre *</label>
-                                    <input required name="first_name" value={formData.first_name} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange focus:ring-1 focus:ring-hoops-orange transition-all" placeholder="Michael" />
+                                    <input
+                                        {...register("first_name")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.first_name ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-700 focus:border-hoops-orange focus:ring-hoops-orange/20'}`}
+                                        placeholder="Michael"
+                                    />
+                                    {errors.first_name && <p className="text-xs text-red-500 font-bold">{errors.first_name.message}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Apellido *</label>
-                                    <input required name="last_name" value={formData.last_name} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange focus:ring-1 focus:ring-hoops-orange transition-all" placeholder="Jordan" />
+                                    <input
+                                        {...register("last_name")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.last_name ? 'border-red-500 focus:ring-red-500/20' : 'border-slate-700 focus:border-hoops-orange focus:ring-hoops-orange/20'}`}
+                                        placeholder="Jordan"
+                                    />
+                                    {errors.last_name && <p className="text-xs text-red-500 font-bold">{errors.last_name.message}</p>}
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Posición</label>
-                                    <select name="position" value={formData.position} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all appearance-none cursor-pointer">
+                                    <select
+                                        {...register("position")}
+                                        className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all appearance-none cursor-pointer"
+                                    >
                                         <option value="Base (PG)">Base (PG)</option>
                                         <option value="Escolta (SG)">Escolta (SG)</option>
                                         <option value="Alero (SF)">Alero (SF)</option>
@@ -101,22 +149,46 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Dorsal #</label>
-                                    <input type="number" name="jersey_number" value={formData.jersey_number} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange" placeholder="23" />
+                                    <input
+                                        type="number"
+                                        {...register("jersey_number")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.jersey_number ? 'border-red-500' : 'border-slate-700 focus:border-hoops-orange'}`}
+                                        placeholder="23"
+                                    />
+                                    {errors.jersey_number && <p className="text-xs text-red-500 font-bold">{errors.jersey_number.message}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Edad</label>
-                                    <input type="number" name="age" value={formData.age} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange" placeholder="28" />
+                                    <input
+                                        type="number"
+                                        {...register("age")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.age ? 'border-red-500' : 'border-slate-700 focus:border-hoops-orange'}`}
+                                        placeholder="28"
+                                    />
+                                    {errors.age && <p className="text-xs text-red-500 font-bold">{errors.age.message}</p>}
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Altura (cm)</label>
-                                    <input type="number" name="height_cm" value={formData.height_cm} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange" placeholder="198" />
+                                    <input
+                                        type="number"
+                                        {...register("height_cm")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.height_cm ? 'border-red-500' : 'border-slate-700 focus:border-hoops-orange'}`}
+                                        placeholder="198"
+                                    />
+                                    {errors.height_cm && <p className="text-xs text-red-500 font-bold">{errors.height_cm.message}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Peso (kg)</label>
-                                    <input type="number" step="0.1" name="weight_kg" value={formData.weight_kg} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange" placeholder="98" />
+                                    <input
+                                        type="number" step="0.1"
+                                        {...register("weight_kg")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.weight_kg ? 'border-red-500' : 'border-slate-700 focus:border-hoops-orange'}`}
+                                        placeholder="98"
+                                    />
+                                    {errors.weight_kg && <p className="text-xs text-red-500 font-bold">{errors.weight_kg.message}</p>}
                                 </div>
                             </div>
 

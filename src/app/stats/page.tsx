@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { BarChart3, TrendingUp, Activity, Award } from 'lucide-react';
 import { cookies } from 'next/headers';
 import PrintButton from '@/components/PrintButton';
+import { calculateAverage, calculatePercentage } from '@/utils/math';
 
 export const revalidate = 0;
 
@@ -77,21 +78,21 @@ export default async function StatsPage() {
     const processedStats = Object.values(playerStatsMap).filter(p => p.gp > 0).map(p => {
         return {
             ...p,
-            ppg: (p.pts / p.gp).toFixed(1),
-            rpg: (p.reb / p.gp).toFixed(1),
-            orpg: (p.oreb / p.gp).toFixed(1),
-            drpg: (p.dreb / p.gp).toFixed(1),
-            apg: (p.ast / p.gp).toFixed(1),
-            spg: (p.stl / p.gp).toFixed(1),
-            bpg: (p.blk / p.gp).toFixed(1),
-            topg: (p.tov / p.gp).toFixed(1),
-            pfpg: (p.pf / p.gp).toFixed(1),
-            fgAverages: `${(p.fgm / p.gp).toFixed(1)} - ${(p.fga / p.gp).toFixed(1)}`,
-            tpAverages: `${(p.tpm / p.gp).toFixed(1)} - ${(p.tpa / p.gp).toFixed(1)}`,
-            ftAverages: `${(p.ftm / p.gp).toFixed(1)} - ${(p.fta / p.gp).toFixed(1)}`,
-            fgPct: p.fga > 0 ? ((p.fgm / p.fga) * 100).toFixed(1) : '0.0',
-            tpPct: p.tpa > 0 ? ((p.tpm / p.tpa) * 100).toFixed(1) : '0.0',
-            ftPct: p.fta > 0 ? ((p.ftm / p.fta) * 100).toFixed(1) : '0.0',
+            ppg: calculateAverage(p.pts, p.gp),
+            rpg: calculateAverage(p.reb, p.gp),
+            orpg: calculateAverage(p.oreb, p.gp),
+            drpg: calculateAverage(p.dreb, p.gp),
+            apg: calculateAverage(p.ast, p.gp),
+            spg: calculateAverage(p.stl, p.gp),
+            bpg: calculateAverage(p.blk, p.gp),
+            topg: calculateAverage(p.tov, p.gp),
+            pfpg: calculateAverage(p.pf, p.gp),
+            fgAverages: `${calculateAverage(p.fgm, p.gp)} - ${calculateAverage(p.fga, p.gp)}`,
+            tpAverages: `${calculateAverage(p.tpm, p.gp)} - ${calculateAverage(p.tpa, p.gp)}`,
+            ftAverages: `${calculateAverage(p.ftm, p.gp)} - ${calculateAverage(p.fta, p.gp)}`,
+            fgPct: calculatePercentage(p.fgm, p.fga),
+            tpPct: calculatePercentage(p.tpm, p.tpa),
+            ftPct: calculatePercentage(p.ftm, p.fta),
         };
     });
 

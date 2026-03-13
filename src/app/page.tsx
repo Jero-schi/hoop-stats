@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { TrendingUp, Users, Activity, Flame, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { calculateAverage, calculatePercentage } from '@/utils/math';
 
 export const revalidate = 0; // Para que muestre siempre los datos actualizados
 
@@ -34,10 +35,10 @@ export default async function DashboardPage() {
   const totalGames = games?.filter(g => g.outcome !== 'TBD').length || 0;
   const wins = games?.filter(g => g.outcome === 'W').length || 0;
   const losses = games?.filter(g => g.outcome === 'L').length || 0;
-  const winRate = totalGames > 0 ? ((wins / totalGames) * 100).toFixed(1) + '%' : '0%';
+  const winRate = `${calculatePercentage(wins, totalGames)}%`;
 
   const totalPoints = games?.filter(g => g.outcome !== 'TBD').reduce((acc, g) => acc + (g.team_score || 0), 0) || 0;
-  const avgPoints = totalGames > 0 ? (totalPoints / totalGames).toFixed(1) : '0';
+  const avgPoints = calculateAverage(totalPoints, totalGames);
 
   const activeRoster = players?.filter(p => p.active !== false).length || 0;
 
@@ -60,8 +61,8 @@ export default async function DashboardPage() {
     .filter((p: any) => p.gp > 0)
     .map((p: any) => ({
       ...p,
-      ppg: (p.pts / p.gp).toFixed(1),
-      apg: (p.ast / p.gp).toFixed(1)
+      ppg: calculateAverage(p.pts, p.gp),
+      apg: calculateAverage(p.ast, p.gp)
     }))
     .sort((a, b) => parseFloat(b.ppg) - parseFloat(a.ppg))
     .slice(0, 3); // Top 3

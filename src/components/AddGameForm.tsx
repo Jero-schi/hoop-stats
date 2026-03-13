@@ -3,49 +3,79 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
-import { Plus, X, Loader2, Check } from 'lucide-react';
+import { Plus, X, Loader2, Check, AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// 1. Zod Schema: El guardia de seguridad de los Partidos
+const gameSchema = z.object({
+    opponent: z.string().min(2, "El nombre del rival debe tener al menos 2 letras").max(50, "Nombre demasiado largo"),
+    location: z.string().min(1, "Debes elegir una ubicación"),
+    date: z.string().min(1, "La fecha es obligatoria"),
+});
+
+// Tipado automático inferido de Zod
+type GameFormValues = z.infer<typeof gameSchema>;
 
 export default function AddGameForm({ teamId }: { teamId: string }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [globalError, setGlobalError] = useState<string | null>(null);
     const [players, setPlayers] = useState<any[]>([]);
+
+    // Mantenemos la lógica de selección de jugadores fuera de Zod porque es muy dinámica visualmente
     const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+
     const router = useRouter();
 
-    const [formData, setFormData] = useState({
-        opponent: '',
-        location: 'Home',
-        date: new Date().toISOString().split('T')[0]
+    // 2. React Hook Form
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors }
+    } = useForm<GameFormValues>({
+        resolver: zodResolver(gameSchema),
+        defaultValues: {
+            opponent: '',
+            location: 'Local',
+            date: new Date().toISOString().split('T')[0]
+        }
     });
 
     const openModal = async () => {
         setIsOpen(true);
+        setGlobalError(null);
+        reset(); // Limpia campos anteriores
         const supabase = createClient();
+        setIsLoading(true);
         const { data } = await supabase.from('players').select('*').eq('team_id', teamId).eq('active', true).order('first_name');
         if (data) {
             setPlayers(data);
             setSelectedPlayers(data.map(p => p.id));
         }
+        setIsLoading(false);
     };
 
     const togglePlayer = (id: string) => {
         setSelectedPlayers(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    const onSubmit = async (data: GameFormValues) => {
+        if (selectedPlayers.length === 0) {
+            setGlobalError("Debes seleccionar al menos 1 jugador para iniciar el partido.");
+            return;
+        }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
         setIsLoading(true);
-
+        setGlobalError(null);
         const supabase = createClient();
 
         const insertData = {
-            opponent: formData.opponent,
-            location: formData.location,
-            date: formData.date,
+            opponent: data.opponent,
+            location: data.location,
+            date: data.date,
             team_id: teamId
         };
 
@@ -56,7 +86,7 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
             .single();
 
         if (error) {
-            alert('Error al crear partido: ' + error.message);
+            setGlobalError('Error al crear el partido en la base de datos: ' + error.message);
             setIsLoading(false);
             return;
         }
@@ -110,16 +140,32 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+
+                            {globalError && (
+                                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex gap-3 text-red-500 text-sm">
+                                    <AlertCircle className="w-5 h-5 shrink-0" />
+                                    <p>{globalError}</p>
+                                </div>
+                            )}
+
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Equipo Rival *</label>
-                                    <input required name="opponent" value={formData.opponent} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange focus:ring-1 focus:ring-hoops-orange transition-all" placeholder="ej. Lakers" />
+                                    <input
+                                        {...register("opponent")}
+                                        className={`w-full bg-slate-900 border text-white rounded-xl px-4 py-3 outline-none transition-all ${errors.opponent ? 'border-red-500' : 'border-slate-700 focus:border-hoops-orange'}`}
+                                        placeholder="ej. Lakers"
+                                    />
+                                    {errors.opponent && <p className="text-xs text-red-500 font-bold">{errors.opponent.message}</p>}
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Ubicación</label>
-                                    <select name="location" value={formData.location} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all appearance-none cursor-pointer">
+                                    <select
+                                        {...register("location")}
+                                        className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all appearance-none cursor-pointer"
+                                    >
                                         <option value="Local">Local</option>
                                         <option value="Visitante">Visitante</option>
                                         <option value="Neutral">Neutral</option>
@@ -128,14 +174,21 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Fecha</label>
-                                    <input type="date" required name="date" value={formData.date} onChange={handleChange} className="w-full bg-slate-900 border border-slate-700 text-slate-300 rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all" />
+                                    <input
+                                        type="date"
+                                        {...register("date")}
+                                        className={`w-full bg-slate-900 border text-slate-300 rounded-xl px-4 py-3 outline-none transition-all ${errors.date ? 'border-red-500' : 'border-slate-700 focus:border-hoops-orange'}`}
+                                    />
+                                    {errors.date && <p className="text-xs text-red-500 font-bold">{errors.date.message}</p>}
                                 </div>
 
                                 {players.length > 0 && (
                                     <div className="space-y-2 col-span-1 md:col-span-2 pt-2">
                                         <div className="flex justify-between items-center mb-2">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Seleccionar Plantilla para este Partido</label>
-                                            <span className="text-xs font-bold text-hoops-orange bg-hoops-orange/10 px-2 py-1 rounded-md">{selectedPlayers.length} Seleccionados</span>
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Seleccionar Plantilla (Min. 1)</label>
+                                            <span className={`text-xs font-bold px-2 py-1 rounded-md ${selectedPlayers.length === 0 ? 'text-red-500 bg-red-500/10' : 'text-hoops-orange bg-hoops-orange/10'}`}>
+                                                {selectedPlayers.length} Seleccionados
+                                            </span>
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto pr-2">
                                             {players.map(p => {
@@ -164,7 +217,7 @@ export default function AddGameForm({ teamId }: { teamId: string }) {
                                 <button type="button" disabled={isLoading} onClick={() => setIsOpen(false)} className="px-5 py-3 rounded-xl text-sm font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
                                     Cancelar
                                 </button>
-                                <button type="submit" disabled={isLoading} className="px-6 py-3 rounded-xl text-sm font-bold bg-hoops-orange text-white shadow-lg shadow-hoops-orange/20 hover:bg-hoops-orange-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                                <button type="submit" disabled={isLoading || selectedPlayers.length === 0} className="px-6 py-3 rounded-xl text-sm font-bold bg-hoops-orange text-white shadow-lg shadow-hoops-orange/20 hover:bg-hoops-orange-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
                                     {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Empezar Partido'}
                                 </button>
                             </div>

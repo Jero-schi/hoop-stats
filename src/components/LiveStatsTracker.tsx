@@ -5,6 +5,10 @@ import { createClient } from '@/utils/supabase/client';
 import { Save, Loader2, ArrowLeft, X, CheckCircle2, AlertCircle, BarChart2, Undo2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ActionGrid from './live-tracker/ActionGrid';
+import WhoMadePlayModal from './live-tracker/WhoMadePlayModal';
+import FullBoxScoreModal from './live-tracker/FullBoxScoreModal';
+import GameSummaries from './live-tracker/GameSummaries';
 
 export default function LiveStatsTracker({ game, players, initialStats }: any) {
     const router = useRouter();
@@ -201,45 +205,14 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
 
             {/* Modal de Selección (Nosotros o Rival) */}
             {activeAction && (
-                <div className="absolute inset-0 z-50 bg-navy-dark/95 backdrop-blur-md flex flex-col p-6 animate-in fade-in duration-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-3xl font-black text-white">¿Quién hizo la jugada?</h2>
-                        <button onClick={() => setActiveAction(null)} className="px-6 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition">
-                            Cancelar
-                        </button>
-                    </div>
-
-                    <div className={`mb-6 p-4 rounded-3xl border-2 flex items-center justify-center ${getActionColor()}`}>
-                        <span className="text-3xl font-black tracking-widest">{activeAction.type.replace('_', ' ')}</span>
-                    </div>
-
-                    <div className="overflow-y-auto pb-20 space-y-4">
-                        {/* Botón Gigante del Rival */}
-                        <button
-                            onClick={() => confirmActionForPlayer('OPPONENT')}
-                            className="w-full flex items-center justify-center p-6 bg-red-950/40 border-2 border-red-500/50 rounded-3xl hover:bg-red-900/60 active:scale-95 transition-all shadow-lg"
-                        >
-                            <span className="font-black text-red-500 text-2xl uppercase tracking-widest">Equipo Rival ({game.opponent})</span>
-                        </button>
-
-                        {/* Cuadrícula de Nuestros Jugadores */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-                            {players.map((p: any) => (
-                                <button
-                                    key={p.id}
-                                    onClick={() => confirmActionForPlayer(p.id)}
-                                    className="flex flex-col items-center justify-center p-6 bg-slate-900 border border-slate-700 rounded-3xl hover:border-hoops-orange hover:bg-hoops-orange/10 active:scale-95 transition-all shadow-lg"
-                                >
-                                    <div className="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center text-2xl font-black text-slate-300 mb-3 shadow-inner">
-                                        {p.jersey_number || '#'}
-                                    </div>
-                                    <span className="font-bold text-white text-lg">{p.first_name}</span>
-                                    <span className="text-slate-400 text-sm">{p.last_name}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+                <WhoMadePlayModal
+                    activeAction={activeAction}
+                    game={game}
+                    players={players}
+                    onConfirmAction={confirmActionForPlayer}
+                    onCancel={() => setActiveAction(null)}
+                    getActionColor={getActionColor}
+                />
             )}
 
             {/* Top Bar Móvil/Desktop */}
@@ -290,230 +263,27 @@ export default function LiveStatsTracker({ game, players, initialStats }: any) {
             <div className="flex-1 overflow-y-auto bg-gradient-to-br from-navy-dark via-navy-dark to-slate-900 p-4 sm:p-8 pb-32">
                 <h3 className="text-slate-500 font-bold uppercase tracking-widest text-sm mb-4 text-center">Acciones de Cancha</h3>
 
-                {/* Cuadrícula de Botones Rediseñada */}
-                <div className="max-w-4xl mx-auto space-y-6">
-                    <div className="hidden md:flex font-bold uppercase tracking-widest text-[10px] text-slate-500 gap-4 mt-2 mb-2 sm:mb-4 px-2">
-                        <span>Score: {gameScore.us}</span>
-                        <span>Fallos y Otras Stats</span>
-                    </div>
+                {/* Cuadrícula de Botones Desacoplada */}
+                <ActionGrid onActionClick={handleActionClick} gameScore={gameScore} />
 
-                    {/* Scoring Grid */}
-                    <div className="grid grid-cols-3 gap-3 sm:gap-6">
-                        {/* 3PT */}
-                        <div className="flex flex-col gap-2">
-                            <button onClick={() => handleActionClick('3PT_MAKE')} className="h-20 sm:h-28 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 hover:bg-emerald-500/20 active:scale-95 transition-all flex flex-col items-center justify-center shadow-lg shadow-emerald-900/10">
-                                <span className="text-2xl sm:text-4xl font-black text-emerald-500">+3</span>
-                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">3PT METIDO</span>
-                            </button>
-                            <button onClick={() => handleActionClick('3PT_MISS')} className="h-12 sm:h-14 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center shadow-inner">
-                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">3PT Fallado</span>
-                            </button>
-                        </div>
-
-                        {/* 2PT */}
-                        <div className="flex flex-col gap-2">
-                            <button onClick={() => handleActionClick('2PT_MAKE')} className="h-20 sm:h-28 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 hover:bg-emerald-500/20 active:scale-95 transition-all flex flex-col items-center justify-center shadow-lg shadow-emerald-900/10">
-                                <span className="text-2xl sm:text-4xl font-black text-emerald-500">+2</span>
-                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">2PT METIDO</span>
-                            </button>
-                            <button onClick={() => handleActionClick('2PT_MISS')} className="h-12 sm:h-14 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center shadow-inner">
-                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">2PT Fallado</span>
-                            </button>
-                        </div>
-
-                        {/* FT */}
-                        <div className="flex flex-col gap-2">
-                            <button onClick={() => handleActionClick('FT_MAKE')} className="h-20 sm:h-28 rounded-3xl bg-emerald-500/10 border-2 border-emerald-500/30 hover:bg-emerald-500/20 active:scale-95 transition-all flex flex-col items-center justify-center shadow-lg shadow-emerald-900/10">
-                                <span className="text-2xl sm:text-4xl font-black text-emerald-500">+1</span>
-                                <span className="text-emerald-500/80 font-bold text-[10px] sm:text-xs">TL METIDO</span>
-                            </button>
-                            <button onClick={() => handleActionClick('FT_MISS')} className="h-12 sm:h-14 rounded-2xl bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center shadow-inner">
-                                <span className="text-red-500/80 font-bold text-[10px] sm:text-xs uppercase tracking-wider">TL Fallado</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Other Stats Grid */}
-                    <div className="grid grid-cols-4 md:grid-cols-7 gap-2 sm:gap-3">
-                        <button onClick={() => handleActionClick('OREB')} className="col-span-2 md:col-span-1 h-16 sm:h-20 rounded-2xl bg-blue-500/10 border border-blue-500/30 hover:bg-blue-500/20 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-blue-400">O-REB</span>
-                        </button>
-                        <button onClick={() => handleActionClick('DREB')} className="col-span-2 md:col-span-1 h-16 sm:h-20 rounded-2xl bg-slate-800 border border-slate-600 hover:bg-slate-700 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-white">D-REB</span>
-                        </button>
-                        <button onClick={() => handleActionClick('AST')} className="col-span-2 md:col-span-1 h-16 sm:h-20 rounded-2xl bg-slate-800 border border-slate-600 hover:bg-slate-700 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-white">AST</span>
-                        </button>
-                        <button onClick={() => handleActionClick('STL')} className="col-span-2 md:col-span-1 h-16 sm:h-20 rounded-2xl bg-slate-800 border border-slate-600 hover:bg-slate-700 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-white">STL</span>
-                        </button>
-                        <button onClick={() => handleActionClick('BLK')} className="col-span-2 md:col-span-1 h-16 sm:h-20 rounded-2xl bg-slate-800 border border-slate-600 hover:bg-slate-700 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-white">BLK</span>
-                        </button>
-                        <button onClick={() => handleActionClick('TOV')} className="col-span-2 md:col-span-1 h-16 sm:h-20 rounded-2xl bg-red-900/20 border border-red-500/30 hover:bg-red-900/40 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-red-500">TOV</span>
-                        </button>
-                        <button onClick={() => handleActionClick('FOUL')} className="col-span-2 md:col-span-1 md:col-start-7 h-16 sm:h-20 rounded-2xl bg-yellow-900/20 border border-yellow-500/30 hover:bg-yellow-900/40 active:scale-95 transition-all flex flex-col items-center justify-center">
-                            <span className="text-lg font-black text-yellow-500">FOUL</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mt-12 max-w-7xl mx-auto items-start">
-                    {/* Resumen Nuestro Equipo */}
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-hoops-orange font-bold uppercase tracking-widest text-sm">Nuestras Estadísticas</h3>
-                            <button onClick={() => setShowFullBoxScore(true)} className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors">
-                                <BarChart2 className="w-3.5 h-3.5" /> Stats Completas
-                            </button>
-                        </div>
-                        <div className="bg-slate-900/50 rounded-3xl border border-slate-800 overflow-x-auto">
-                            <table className="w-full text-left border-collapse min-w-[500px]">
-                                <thead>
-                                    <tr className="border-b border-slate-800 text-xs text-slate-500 uppercase">
-                                        <th className="p-3 pl-4 font-bold">Jugador</th>
-                                        <th className="p-3 font-bold text-center">PTS</th>
-                                        <th className="p-3 font-bold text-center">FG</th>
-                                        <th className="p-3 font-bold text-center text-blue-400">O-REB</th>
-                                        <th className="p-3 font-bold text-center text-slate-400">D-REB</th>
-                                        <th className="p-3 font-bold text-center">AST</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {players.map((p: any) => {
-                                        const s = stats[p.id];
-                                        if (!s || (s.points === 0 && s.tiros_campo_intentados === 0 && s.rebotes_totales === 0 && s.asistencias === 0)) return null;
-                                        return (
-                                            <tr key={p.id} className="border-b border-slate-800/50 hover:bg-slate-800/50 transition-colors text-white text-sm font-semibold">
-                                                <td className="p-3 pl-4 flex items-center gap-2">
-                                                    <span className="text-slate-500 text-[10px] w-4">{p.jersey_number}</span>
-                                                    {p.first_name} {p.last_name[0]}.
-                                                </td>
-                                                <td className="p-3 text-center text-hoops-orange font-black">{s.points}</td>
-                                                <td className="p-3 text-center text-slate-400 text-xs">{s.tiros_campo_metidos}/{s.tiros_campo_intentados}</td>
-                                                <td className="p-3 text-center text-blue-400">{s.rebotes_ofensivos}</td>
-                                                <td className="p-3 text-center text-slate-300">{s.rebotes_defensivos}</td>
-                                                <td className="p-3 text-center">{s.asistencias}</td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {/* Resumen Equipo Rival (Global) */}
-                    <div>
-                        <h3 className="text-red-500 font-bold uppercase tracking-widest text-sm mb-4">Estadísticas del Equipo Rival</h3>
-                        <div className="bg-red-950/20 rounded-3xl border border-red-900/30 overflow-hidden">
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-red-900/30">
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">PTS</span>
-                                    <span className="text-2xl font-black text-white">{gameScore.them}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">O-REB</span>
-                                    <span className="text-2xl font-black text-white">{opponentStats.rebotes_ofensivos}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">D-REB</span>
-                                    <span className="text-2xl font-black text-white">{opponentStats.rebotes_defensivos}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">AST</span>
-                                    <span className="text-2xl font-black text-white">{opponentStats.asistencias}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">STL</span>
-                                    <span className="text-2xl font-black text-white">{opponentStats.robos}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">TOV</span>
-                                    <span className="text-2xl font-black text-red-400">{opponentStats.perdidas}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">BLK</span>
-                                    <span className="text-2xl font-black text-white">{opponentStats.tapones}</span>
-                                </div>
-                                <div className="bg-slate-900 p-4 flex flex-col items-center">
-                                    <span className="text-xs font-bold text-red-500/70 mb-1">FOULS</span>
-                                    <span className="text-2xl font-black text-yellow-500">{opponentStats.faltas_personales}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {/* Resúmenes */}
+                <GameSummaries
+                    players={players}
+                    stats={stats}
+                    gameScore={gameScore}
+                    opponentStats={opponentStats}
+                    onShowFullBoxScore={() => setShowFullBoxScore(true)}
+                />
 
             </div>
 
             {/* FULL BOX SCORE MODAL */}
-            {showFullBoxScore && (
-                <div className="absolute inset-0 z-[60] bg-navy-dark/95 backdrop-blur-md flex flex-col p-6 animate-in fade-in duration-200">
-                    <div className="flex justify-between items-center mb-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-hoops-orange/10 flex items-center justify-center">
-                                <BarChart2 className="w-5 h-5 text-hoops-orange" />
-                            </div>
-                            <h2 className="text-3xl font-black text-white">Estadísticas Completas</h2>
-                        </div>
-                        <button onClick={() => setShowFullBoxScore(false)} className="px-6 py-3 rounded-2xl bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 transition">
-                            Cerrar
-                        </button>
-                    </div>
-
-                    <div className="flex-1 overflow-auto bg-slate-900/50 rounded-3xl border border-slate-800 p-4">
-                        <div className="min-w-[1000px]">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="border-b border-slate-800 text-[10px] sm:text-xs text-slate-500 uppercase tracking-wider">
-                                        <th className="p-3 font-bold sticky left-0 bg-slate-900 z-10 w-48">Jugador</th>
-                                        <th className="p-3 font-black text-white text-center">PTS</th>
-                                        <th className="p-3 font-bold text-center">FGM-A</th>
-                                        <th className="p-3 font-bold text-center">3PM-A</th>
-                                        <th className="p-3 font-bold text-center">FTM-A</th>
-                                        <th className="p-3 font-bold text-center text-blue-400/80">OREB</th>
-                                        <th className="p-3 font-bold text-center text-slate-400">DREB</th>
-                                        <th className="p-3 font-bold text-center text-blue-400">REB</th>
-                                        <th className="p-3 font-bold text-center text-emerald-500">AST</th>
-                                        <th className="p-3 font-bold text-center">STL</th>
-                                        <th className="p-3 font-bold text-center">BLK</th>
-                                        <th className="p-3 font-bold text-center text-red-500">TOV</th>
-                                        <th className="p-3 font-bold text-center text-yellow-500">PF</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {players.map((p: any) => {
-                                        const s = stats[p.id];
-                                        if (!s) return null;
-                                        return (
-                                            <tr key={p.id} className="border-b border-slate-800 hover:bg-slate-800/50 transition-colors text-white text-sm font-semibold">
-                                                <td className="p-3 sticky left-0 bg-slate-900/90 z-10 flex items-center gap-2">
-                                                    <span className="text-slate-500 text-[10px] w-4">{p.jersey_number}</span>
-                                                    <span className="truncate">{p.first_name} {p.last_name}</span>
-                                                </td>
-                                                <td className="p-3 text-center text-hoops-orange font-black text-lg">{s.points}</td>
-                                                <td className="p-3 text-center text-slate-300 text-xs">{s.tiros_campo_metidos}-{s.tiros_campo_intentados}</td>
-                                                <td className="p-3 text-center text-slate-300 text-xs">{s.tiros_3p_metidos}-{s.tiros_3p_intentados}</td>
-                                                <td className="p-3 text-center text-slate-300 text-xs">{s.tiros_libres_metidos}-{s.tiros_libres_intentados}</td>
-                                                <td className="p-3 text-center text-blue-400/80">{s.rebotes_ofensivos}</td>
-                                                <td className="p-3 text-center text-slate-400">{s.rebotes_defensivos}</td>
-                                                <td className="p-3 text-center text-blue-400 font-bold">{s.rebotes_totales}</td>
-                                                <td className="p-3 text-center text-emerald-500 font-bold">{s.asistencias}</td>
-                                                <td className="p-3 text-center">{s.robos}</td>
-                                                <td className="p-3 text-center">{s.tapones}</td>
-                                                <td className="p-3 text-center text-red-500">{s.perdidas}</td>
-                                                <td className="p-3 text-center text-yellow-500">{s.faltas_personales}</td>
-                                            </tr>
-                                        )
-                                    })}
-                                    {/* Footer Totals row could go here */}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <FullBoxScoreModal
+                show={showFullBoxScore}
+                onClose={() => setShowFullBoxScore(false)}
+                players={players}
+                stats={stats}
+            />
 
             {/* Custom Toast Notification */}
             {toast && (
