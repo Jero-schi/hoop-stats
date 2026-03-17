@@ -42,12 +42,13 @@ export default async function GamesPage() {
             )}
 
             {games && games.length === 0 ? (
-                <div className="bg-navy-light/30 border border-slate-800 rounded-3xl p-12 text-center flex flex-col items-center mt-8">
-                    <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                        <Calendar className="w-10 h-10 text-slate-500" />
+                <div className="bg-navy-light/30 border border-slate-800/50 rounded-3xl p-16 text-center flex flex-col items-center mt-12 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-24 h-24 bg-slate-800/80 rounded-full flex items-center justify-center mb-6 shadow-inner border border-slate-700 relative z-10 group-hover:scale-110 group-hover:bg-slate-800 transition-all duration-300">
+                        <Calendar className="w-12 h-12 text-slate-500 group-hover:text-emerald-500 transition-colors" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Aún sin partidos</h3>
-                    <p className="text-slate-400 mb-6">Empieza un nuevo partido para comenzar a generar estadísticas.</p>
+                    <h3 className="text-2xl font-black text-white mb-3 relative z-10">Sin Partidos Disputados</h3>
+                    <p className="text-slate-400 mb-8 max-w-sm mx-auto relative z-10 text-lg">El historial está en blanco. Organiza un nuevo partido, registra estadísticas en vivo y analiza el desempeño de tu equipo aquí.</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

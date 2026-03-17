@@ -43,7 +43,7 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
         defaultValues: {
             first_name: '',
             last_name: '',
-            position: 'Base (PG)',
+            position: 'PG',
             jersey_number: '',
             age: '',
             height_cm: '',
@@ -140,11 +140,11 @@ export default function AddPlayerForm({ teamId }: { teamId: string }) {
                                         {...register("position")}
                                         className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:border-hoops-orange transition-all appearance-none cursor-pointer"
                                     >
-                                        <option value="Base (PG)">Base (PG)</option>
-                                        <option value="Escolta (SG)">Escolta (SG)</option>
-                                        <option value="Alero (SF)">Alero (SF)</option>
-                                        <option value="Ala-Pívot (PF)">Ala-Pívot (PF)</option>
-                                        <option value="Pívot (C)">Pívot (C)</option>
+                                        <option value="PG">Base (PG)</option>
+                                        <option value="SG">Escolta (SG)</option>
+                                        <option value="SF">Alero (SF)</option>
+                                        <option value="PF">Ala-Pívot (PF)</option>
+                                        <option value="C">Pívot (C)</option>
                                     </select>
                                 </div>
                                 <div className="space-y-2">
