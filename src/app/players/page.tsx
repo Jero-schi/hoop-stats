@@ -44,12 +44,13 @@ export default async function PlayersPage() {
 
             {/* Grid de Jugadores */}
             {players && players.length === 0 ? (
-                <div className="bg-navy-light/30 border border-slate-800 rounded-3xl p-12 text-center flex flex-col items-center mt-8">
-                    <div className="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                        <User className="w-10 h-10 text-slate-500" />
+                <div className="bg-navy-light/30 border border-slate-800/50 rounded-3xl p-16 text-center flex flex-col items-center mt-12 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-br from-hoops-orange/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-24 h-24 bg-slate-800/80 rounded-full flex items-center justify-center mb-6 shadow-inner border border-slate-700 relative z-10 group-hover:scale-110 group-hover:bg-slate-800 transition-all duration-300">
+                        <User className="w-12 h-12 text-slate-500 group-hover:text-hoops-orange transition-colors" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2">Sin jugadores</h3>
-                    <p className="text-slate-400 mb-6">Tu plantilla está vacía. Empieza añadiendo a tu primer jugador.</p>
+                    <h3 className="text-2xl font-black text-white mb-3 relative z-10">Plantilla Vacía</h3>
+                    <p className="text-slate-400 mb-8 max-w-sm mx-auto relative z-10 text-lg">Parece que tu equipo aún no tiene jugadores registrados. ¡Añade tu primer jugador para empezar a armar la táctica!</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
