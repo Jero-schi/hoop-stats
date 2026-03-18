@@ -2,6 +2,7 @@ import React from 'react';
 import { createClient } from '@/utils/supabase/server';
 import { BarChart3, TrendingUp, Activity, Award } from 'lucide-react';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import PrintButton from '@/components/PrintButton';
 import { calculateAverage, calculatePercentage } from '@/utils/math';
 
@@ -9,6 +10,12 @@ export const revalidate = 0;
 
 export default async function StatsPage() {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect('/login');
+    }
+
     const cookieStore = await cookies();
     const activeTeamId = cookieStore.get('active_team_id')?.value;
 

@@ -3,11 +3,18 @@ import { createClient } from '@/utils/supabase/server';
 import AddPlayerForm from '@/components/AddPlayerForm';
 import { User } from 'lucide-react';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const revalidate = 0; // Para que no cachee y muestre datos recientes siempre
 
 export default async function PlayersPage() {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect('/login');
+    }
+
     const cookieStore = await cookies();
     const activeTeamId = cookieStore.get('active_team_id')?.value;
 

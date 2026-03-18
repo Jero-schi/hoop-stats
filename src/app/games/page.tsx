@@ -4,11 +4,18 @@ import AddGameForm from '@/components/AddGameForm';
 import { Calendar, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const revalidate = 0;
 
 export default async function GamesPage() {
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect('/login');
+    }
+
     const cookieStore = await cookies();
     const activeTeamId = cookieStore.get('active_team_id')?.value;
 
