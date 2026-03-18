@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { ChevronDown, Plus, Shield } from 'lucide-react';
+import { ChevronDown, Plus, Shield, AlertCircle } from 'lucide-react';
 
 export default function TeamSelector() {
     const [teams, setTeams] = useState<any[]>([]);
@@ -11,6 +11,7 @@ export default function TeamSelector() {
     const [isOpen, setIsOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [newTeamName, setNewTeamName] = useState('');
+    const [createError, setCreateError] = useState<string | null>(null);
     const router = useRouter();
     const supabase = createClient();
 
@@ -43,6 +44,7 @@ export default function TeamSelector() {
 
     const handleCreateTeam = async (e: React.FormEvent) => {
         e.preventDefault();
+        setCreateError(null);
         if (!newTeamName.trim()) return;
 
         const { data, error } = await supabase.from('teams').insert([{ name: newTeamName }]).select().single();
@@ -52,7 +54,7 @@ export default function TeamSelector() {
             await loadTeams();
             handleSelectTeam(data.id);
         } else {
-            alert("Error al crear equipo: " + error?.message);
+            setCreateError("Error al crear equipo: " + error?.message);
         }
     };
 
@@ -111,6 +113,14 @@ export default function TeamSelector() {
                     <div className="bg-navy-light border border-slate-700 rounded-3xl w-full max-w-sm p-6 shadow-2xl animate-in zoom-in-95 duration-200">
                         <h3 className="text-xl font-black text-white mb-2">Crear Nueva Categoría</h3>
                         <p className="text-slate-400 text-sm mb-6">ej. U15 Masculino, U17 Femenino, Primera</p>
+
+                        {createError && (
+                            <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex gap-2 text-red-500 text-sm">
+                                <AlertCircle className="w-5 h-5 shrink-0" />
+                                <p>{createError}</p>
+                            </div>
+                        )}
+
                         <form onSubmit={handleCreateTeam}>
                             <input
                                 autoFocus
