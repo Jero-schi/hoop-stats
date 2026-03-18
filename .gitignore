@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+/.swc
+.turbo/
 
 # production
 /build
@@ -23,6 +25,8 @@
 # misc
 .DS_Store
 *.pem
+*.log
+test_output.txt
 
 # debug
 npm-debug.log*
@@ -30,8 +34,16 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files (Secrets should not be committed)
+.env
+.env*.local
+.env.development
+.env.production
+.env.test
+
+# Allow example env files
+!.env.example
+!.env.template
 
 # vercel
 .vercel
@@ -39,3 +51,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE / Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
