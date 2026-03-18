@@ -3,12 +3,19 @@ import { createClient } from '@/utils/supabase/server';
 import { TrendingUp, Users, Activity, Flame, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { calculateAverage, calculatePercentage } from '@/utils/math';
 
 export const revalidate = 0; // Para que muestre siempre los datos actualizados
 
 export default async function DashboardPage() {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect('/login');
+  }
+
   const cookieStore = await cookies();
   const activeTeamId = cookieStore.get('active_team_id')?.value;
 

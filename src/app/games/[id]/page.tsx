@@ -1,6 +1,6 @@
 import React from 'react';
 import { createClient } from '@/utils/supabase/server';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import LiveStatsTracker from '@/components/LiveStatsTracker';
 
 export const revalidate = 0;
@@ -10,6 +10,11 @@ export default async function GamePage(props: { params: Promise<{ id: string }> 
     const { id } = params;
 
     const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        redirect('/login');
+    }
 
     // 1. Obtener el partido
     const { data: game, error: gameError } = await supabase
